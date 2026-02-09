@@ -47,6 +47,9 @@ jobs:
           # Backend .env
           echo "DAILY_EXECUTION_LIMIT=$DAILY_EXECUTION_LIMIT" >> backend/.env
 
+      - name: Generate Releases
+        run: pnpm run generate-releases
+
       - name: Build
         run: pnpm run build
 
