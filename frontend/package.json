@@ -1,0 +1,42 @@
+{
+  "name": "@kimagure/frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "build:debug": "cross-env NEXT_PUBLIC_SHOW_DEBUG=true next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "format": "biome format --write ."
+  },
+  "dependencies": {
+    "@heroui/react": "^2.8.8",
+    "@radix-ui/react-dialog": "^1.1.15",
+    "@radix-ui/react-dropdown-menu": "^2.1.16",
+    "@radix-ui/react-label": "^2.1.8",
+    "@radix-ui/react-slot": "^1.2.4",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "firebase": "^11.2.0",
+    "framer-motion": "^12.0.0",
+    "lucide-react": "^0.475.0",
+    "next": "15.1.0",
+    "next-themes": "^0.4.4",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tailwind-merge": "^3.4.0",
+    "tailwindcss-animate": "^1.0.7"
+  },
+  "devDependencies": {
+    "@heroui/theme": "^2.4.6",
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "autoprefixer": "^10.4.20",
+    "cross-env": "^7.0.3",
+    "postcss": "^8.5.1",
+    "tailwindcss": "3.4.17",
+    "typescript": "^5.7.0"
+  }
+}

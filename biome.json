@@ -1,0 +1,62 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.3.14/schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
+  "files": {
+    "ignoreUnknown": false,
+    "includes": [
+      "**",
+      "!!frontend/public/sw.js",
+      "!!frontend/public/workbox-*.js",
+      "!!frontend/public/sw.js.map",
+      "!!.tmp"
+    ]
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 100
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true,
+      "suspicious": {
+        "noExplicitAny": "off",
+        "noUnknownAtRules": "off",
+        "noTsIgnore": "off"
+      },
+      "style": {
+        "useNodejsImportProtocol": "off"
+      },
+      "a11y": {
+        "useButtonType": "off",
+        "noSvgWithoutTitle": "off",
+        "noStaticElementInteractions": "off",
+        "useKeyWithClickEvents": "off"
+      }
+    }
+  },
+  "css": {
+    "parser": {
+      "cssModules": true,
+      "allowWrongLineComments": true,
+      "tailwindDirectives": true
+    }
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "double"
+    }
+  },
+  "json": {
+    "parser": {
+      "allowComments": true,
+      "allowTrailingCommas": true
+    }
+  }
+}
