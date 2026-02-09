@@ -7,6 +7,10 @@ settings:
 importers:
 
   .:
+    dependencies:
+      marked:
+        specifier: ^15.0.7
+        version: 15.0.12
     devDependencies:
       '@biomejs/biome':
         specifier: ^2.3.13
@@ -5429,6 +5433,11 @@ packages:
 
   marked@13.0.3:
     resolution: {integrity: sha512-rqRix3/TWzE9rIoFGIn8JmsVfhiuC8VIQ8IdX5TfzmeBucdY05/0UlzKaw0eVtpcN/OdVFpBk7CjKGo9iHJ/zA==}
+    engines: {node: '>= 18'}
+    hasBin: true
+
+  marked@15.0.12:
+    resolution: {integrity: sha512-8dD6FusOQSrpv9Z1rdNMdlSgQOIP880DHqnohobOmYLElGEqAL/JvxvuxZO16r4HtjTlfPRDC1hbvxC9dPN2nA==}
     engines: {node: '>= 18'}
     hasBin: true
 
@@ -14226,6 +14235,8 @@ snapshots:
       supports-hyperlinks: 3.2.0
 
   marked@13.0.3: {}
+
+  marked@15.0.12: {}
 
   math-intrinsics@1.1.0: {}
 

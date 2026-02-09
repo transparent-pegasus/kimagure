@@ -1,17 +1,18 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+"use client";
 
-export default function PrivacyPolicyPage() {
+import { useState } from "react";
+
+import PrivacyPolicyViewer from "@/components/PrivacyPolicyViewer";
+import { privacyContent } from "@/data/privacyContent";
+
+export default function PrivacyPage() {
+  const [lang, setLang] = useState<"ja" | "en">("ja");
+
   return (
-    <div className="space-y-4">
-      <h1 className="text-2xl font-bold">Privacy Policy</h1>
-      <Card>
-        <CardHeader>
-          <CardTitle>Privacy Policy</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p>This is a placeholder for the privacy policy.</p>
-        </CardContent>
-      </Card>
-    </div>
+    <PrivacyPolicyViewer
+      content={privacyContent[lang]}
+      lang={lang}
+      onLanguageChange={(newLang) => setLang(newLang)}
+    />
   );
 }

@@ -31,6 +31,7 @@ lint:
 
 fix:
 	pnpm biome check --write .
+	pnpm --filter @kimagure/frontend lint --fix
 
 # Testing
 test:

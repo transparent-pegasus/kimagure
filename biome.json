@@ -5,6 +5,13 @@
     "clientKind": "git",
     "useIgnoreFile": true
   },
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "off"
+      }
+    }
+  },
   "files": {
     "ignoreUnknown": false,
     "includes": [

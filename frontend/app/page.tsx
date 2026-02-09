@@ -208,7 +208,7 @@ export default function Home() {
             setSuggestion(targetItem.output);
             setCurrentScreen("result");
             setCurrentHistoryId(historyId);
-            window.history.replaceState({}, "", "/");
+            // URLからhistoryIdを削除しない（BottomNavの判定に必要）
           } else {
             setCurrentScreen("input");
           }
@@ -454,6 +454,7 @@ export default function Home() {
               } else {
                 setCurrentScreen("input");
                 setSuggestion(null);
+                setCurrentHistoryId(null);
               }
             }}
           >
@@ -595,13 +596,13 @@ export default function Home() {
       </Section>
 
       {/* 2. Preferences */}
-      <Section title="提案の希望条件" icon={<Squirrel size={20} />}>
+      <Section title="リクエスト" icon={<Squirrel size={20} />}>
         <div className="space-y-4">
           <div className="space-y-2">
             <Label>使いたい材料</Label>
             <Input
               type="text"
-              placeholder="例: 玉ねぎ, 豚肉, 豆腐"
+              placeholder="例: 玉ねぎ。豚肉。豆腐"
               className="font-bold placeholder:text-muted-foreground/50"
             />
           </div>
@@ -609,7 +610,7 @@ export default function Home() {
             <Label>食べたいメニュー・ジャンル</Label>
             <Input
               type="text"
-              placeholder="例: 和定食, ハンバーグセット"
+              placeholder="例: 和定食。ハンバーグセット"
               className="font-bold placeholder:text-muted-foreground/50"
             />
           </div>

@@ -59,25 +59,35 @@ export default function HistoryPage() {
             <Card
               key={item.id}
               onClick={() => router.push(`/?historyId=${item.id}`)}
-              className="p-4 border-l-4 border-l-amber-400 flex items-center justify-between hover:bg-stone-50 transition-colors cursor-pointer"
+              className="group overflow-hidden border-2 border-stone-200 hover:border-amber-400 hover:shadow-md transition-all cursor-pointer rounded-2xl"
             >
-              <div className="flex-1">
-                <div className="text-xs font-black text-stone-400 mb-1">{item.date}</div>
-                <div className="font-bold text-stone-800 line-clamp-2 text-sm leading-snug">
-                  {item.output?.meals
-                    ?.map(
-                      (m: any) =>
-                        `${m.label}: ${m.dishes?.map((d: any) => d.name).join("・") || "なし"}`,
-                    )
-                    .join(" / ") || "詳細なし"}
-                </div>
-                <div className="text-xs text-stone-500 mt-1 font-medium">
-                  {item.output?.totalCalorie}kcal
-                </div>
+              <div className="bg-stone-50 group-hover:bg-amber-50 px-4 py-2 border-b border-stone-100 flex items-center justify-between transition-colors">
+                <span className="text-sm font-black text-stone-700 flex items-center gap-2">
+                  {item.date}
+                </span>
+                <span className="text-[10px] font-bold text-stone-400 uppercase tracking-widest">
+                  {item.output?.totalCalorie} kcal
+                </span>
               </div>
-              <Button variant="ghost" size="icon" className="text-stone-400">
-                <ChevronRight size={20} />
-              </Button>
+              <div className="p-4 flex items-center justify-between">
+                <div className="flex-1">
+                  <div className="font-bold text-stone-600 line-clamp-2 text-sm leading-relaxed">
+                    {item.output?.meals
+                      ?.map(
+                        (m: any) =>
+                          `${m.label}: ${m.dishes?.map((d: any) => d.name).join("・") || "なし"}`,
+                      )
+                      .join(" / ") || "詳細なし"}
+                  </div>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-stone-300 group-hover:text-amber-500 group-hover:translate-x-1 transition-all"
+                >
+                  <ChevronRight size={20} />
+                </Button>
+              </div>
             </Card>
           ))}
         </div>

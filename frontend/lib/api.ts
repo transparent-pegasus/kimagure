@@ -1,3 +1,4 @@
+import { getAnalytics, isSupported } from "firebase/analytics";
 import { getApp, getApps, initializeApp } from "firebase/app";
 import { connectAuthEmulator, getAuth } from "firebase/auth";
 import {
@@ -42,6 +43,12 @@ export const app = getFirebaseApp();
 export const functions = app ? getFunctions(app, "us-central1") : null;
 export const auth = app ? getAuth(app) : null;
 export const db = app ? getFirestore(app) : null;
+
+// Initialize Analytics
+export const analytics =
+  typeof window !== "undefined"
+    ? isSupported().then((yes) => (yes && app ? getAnalytics(app) : null))
+    : Promise.resolve(null);
 
 // Connect to emulators if running locally
 if (

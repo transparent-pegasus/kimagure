@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 
+import { GoogleAnalytics } from "@next/third-parties/google";
+import { Suspense } from "react";
+
 import { BottomNav } from "@/components/layout/BottomNav";
 import { Header } from "@/components/layout/Header";
 
@@ -25,6 +28,7 @@ export default function RootLayout({
     <html lang="ja" suppressHydrationWarning>
       <head>
         <link rel="manifest" href="/manifest.json" />
+        <link rel="icon" type="image/png" href="/icon-192x192.png" />
         <meta name="theme-color" content="#fbbf24" />
         <link rel="apple-touch-icon" href="/icon-192x192.png" />
         <link
@@ -42,12 +46,19 @@ export default function RootLayout({
         }
       >
         <Providers>
-          <div className="flex flex-col h-[100dvh]">
+          <div className="flex flex-col h-[100dvh] max-w-screen-sm mx-auto bg-background border-x border-border/50 shadow-2xl relative">
             <Header />
-            <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 pb-20">{children}</main>
-            <BottomNav />
+            <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 pb-20 no-scrollbar">
+              {children}
+            </main>
+            <Suspense fallback={<div className="h-16 bg-background animate-pulse" />}>
+              <BottomNav />
+            </Suspense>
           </div>
         </Providers>
+        {process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID && (
+          <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID} />
+        )}
       </body>
     </html>
   );

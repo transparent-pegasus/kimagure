@@ -4,12 +4,16 @@
   "private": true,
   "scripts": {
     "dev": "pnpm build:backend && concurrently -k --names \"EMULATORS,FRONTEND\" -c \"blue,magenta\" \"npx firebase emulators:start --only functions,firestore,auth\" \"pnpm --filter @kimagure/frontend dev\"",
-    "build": "pnpm --filter @kimagure/backend build && pnpm --filter @kimagure/frontend build",
+    "build": "node scripts/generate-releases.js && pnpm --filter @kimagure/backend build && pnpm --filter @kimagure/frontend build",
     "build:backend": "pnpm --filter @kimagure/backend build",
+    "generate-releases": "node scripts/generate-releases.js",
     "format": "pnpm biome format --write .",
     "lint": "pnpm lint:biome && pnpm lint:eslint",
     "lint:biome": "pnpm biome lint .",
     "lint:eslint": "eslint ."
+  },
+  "dependencies": {
+    "marked": "^15.0.7"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.13",

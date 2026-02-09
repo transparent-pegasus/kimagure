@@ -2,12 +2,14 @@
 
 import { History, Utensils } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 
 import { cn } from "@/lib/utils";
 
 export function BottomNav() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const hasHistoryId = searchParams.has("historyId");
 
   const items = [
     {
@@ -23,11 +25,16 @@ export function BottomNav() {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-background border-t h-16 pb-[env(safe-area-inset-bottom)] flex items-center justify-around shrink-0">
+    <nav className="absolute bottom-0 left-0 right-0 z-40 bg-background border-t h-16 pb-[env(safe-area-inset-bottom)] flex items-center justify-around shrink-0">
       {items.map((item) => {
-        const isActive = pathname === item.href;
+        const isHome = item.href === "/";
+
+        const isActive = isHome
+          ? pathname === "/" && !hasHistoryId
+          : pathname.startsWith("/history") || (pathname === "/" && hasHistoryId);
+
         // If already on home page (active), clicking "Suggestion" should reset the view
-        const href = item.href === "/" && isActive ? "/?reset=true" : item.href;
+        const href = isHome && isActive ? "/?reset=true" : item.href;
 
         return (
           <Link

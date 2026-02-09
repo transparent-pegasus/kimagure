@@ -10,9 +10,7 @@ export function Header() {
   return (
     <header className="sticky top-0 z-40 bg-amber-400 border-b border-amber-500/20 h-14 flex items-center justify-between px-4 shrink-0 shadow-sm">
       <div className="flex items-center gap-2">
-        <div className="bg-white/40 p-1 rounded-lg">
-          <Rabbit className="h-6 w-6 text-stone-800" />
-        </div>
+        <Rabbit className="h-7 w-7 text-stone-800" />
         <div className="flex flex-col">
           <div className="font-bold text-sm leading-tight font-rounded text-stone-800">
             きまぐれごはん
