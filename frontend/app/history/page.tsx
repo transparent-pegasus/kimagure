@@ -17,9 +17,6 @@ export default function HistoryPage() {
   useEffect(() => {
     const fetchHistory = async () => {
       try {
-        // Wait a brief moment for auth to initialize if needed
-        // In a real app, use an AuthContext to wait for 'user' state
-        await new Promise((resolve) => setTimeout(resolve, 500));
         const data = await getHistory();
 
         setHistory(data);

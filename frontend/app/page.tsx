@@ -199,8 +199,6 @@ export default function Home() {
 
       if (historyId) {
         try {
-          // Wait briefly for auth
-          await new Promise((resolve) => setTimeout(resolve, 500));
           const history = await getHistory();
           const targetItem = history.find((h) => h.id === historyId);
 
@@ -317,6 +315,34 @@ export default function Home() {
       ...ngIngredients,
       { hasLimit: false, id: Date.now().toString(), isNg: false, label: "", unit: "g以下" },
     ]);
+
+    // 追加した要素の高さ分だけスムーズにスクロール (main要素がスクロールコンテナ)
+    requestAnimationFrame(() => {
+      const mainElement = document.querySelector("main");
+
+      if (!mainElement) return;
+
+      const targetScroll = 60;
+      const duration = 400;
+      const startTime = performance.now();
+      const startScroll = mainElement.scrollTop;
+
+      const easeOutQuad = (t: number) => t * (2 - t);
+
+      const animateScroll = (currentTime: number) => {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const easeProgress = easeOutQuad(progress);
+
+        mainElement.scrollTop = startScroll + targetScroll * easeProgress;
+
+        if (progress < 1) {
+          requestAnimationFrame(animateScroll);
+        }
+      };
+
+      requestAnimationFrame(animateScroll);
+    });
   };
 
   const removeNgIngredient = (index: number) => {
@@ -395,8 +421,11 @@ export default function Home() {
   const handleSave = async () => {
     if (!suggestion) return;
 
+    setLoadingMessage("献立を保存しています...");
+    setCurrentScreen("loading");
+
     try {
-      await saveHistory({
+      const result = await saveHistory({
         date: suggestion.date,
         input: {
           mealPlans: meals.map((m) => ({
@@ -408,11 +437,16 @@ export default function Home() {
         output: suggestion,
       });
 
+      if (!result.success) {
+        throw new Error("Save returned unsuccessful");
+      }
+
       alert("献立を保存しました！");
       setCurrentScreen("input");
       setSuggestion(null);
     } catch (error) {
       console.error("Failed to save history:", error);
+      setCurrentScreen("result");
       alert("保存に失敗しました。もう一度お試しください。");
     }
   };
@@ -678,7 +712,9 @@ export default function Home() {
                 active={effort === "ready_made_only"}
                 onClick={() => setEffort("ready_made_only")}
               >
-                スーパー・コンビニ
+                スーパー・
+                <wbr />
+                コンビニ
               </TabButton>
               <TabButton active={effort === "eating_out"} onClick={() => setEffort("eating_out")}>
                 外食
@@ -729,7 +765,9 @@ export default function Home() {
                   active={gender === "none"}
                   onClick={() => handleProfileChange(birthYear, "none", calorieLimit)}
                 >
-                  指定なし
+                  指定
+                  <wbr />
+                  なし
                 </TabButton>
               </div>
             </div>
@@ -873,12 +911,12 @@ export default function Home() {
           >
             <Plus size={18} className="mr-2" /> 制限項目を追加
           </Button>
-          <div className="h-24" /> {/* Spacer for scrolling */}
+          <div className="h-8" /> {/* Spacer for scrolling */}
         </div>
       </Section>
 
       {/* FAB */}
-      <div className="sticky bottom-6 left-0 right-0">
+      <div className="sticky bottom-3 left-0 right-0">
         <Button
           onClick={handleSuggest}
           className="w-full py-6 rounded-2xl font-extrabold text-xl shadow-lg flex items-center justify-center gap-2"
@@ -897,7 +935,7 @@ const InsertButton = ({ onClick }: { onClick: () => void }) => (
     <div className="absolute inset-0 flex items-center justify-center">
       <div className="h-0.5 w-full bg-border rounded-full"></div>
     </div>
-    <div className="relative z-10">
+    <div className="relative">
       <Button
         variant="outline"
         size="icon"

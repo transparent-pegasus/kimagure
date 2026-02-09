@@ -1,6 +1,6 @@
 import { getAnalytics, isSupported } from "firebase/analytics";
 import { getApp, getApps, initializeApp } from "firebase/app";
-import { connectAuthEmulator, getAuth } from "firebase/auth";
+import { connectAuthEmulator, getAuth, onAuthStateChanged } from "firebase/auth";
 import {
   collection,
   connectFirestoreEmulator,
@@ -91,6 +91,9 @@ export interface MenuOutput {
 export const suggestMenu = async (input: MenuInput, date: string): Promise<MenuOutput> => {
   if (!functions) throw new Error("Firebase not initialized");
 
+  // Ensure auth is initialized (anonymous sign-in completed)
+  await getCurrentUser();
+
   const suggestMenuFn = httpsCallable<{ input: MenuInput; date: string }, MenuOutput>(
     functions,
     "suggest_menu",
@@ -102,6 +105,9 @@ export const suggestMenu = async (input: MenuInput, date: string): Promise<MenuO
 
 export const saveHistory = async (data: any): Promise<{ success: boolean; id: string }> => {
   if (!functions) throw new Error("Firebase not initialized");
+
+  // Ensure auth is initialized (anonymous sign-in completed)
+  await getCurrentUser();
 
   const saveHistoryFn = httpsCallable<any, { success: boolean; id: string }>(
     functions,
@@ -119,27 +125,71 @@ export interface HistoryItem {
   createdAt: string;
 }
 
+/**
+ * Get current user, waiting for initialization if necessary
+ */
+export const getCurrentUser = (): Promise<any> => {
+  return new Promise((resolve) => {
+    if (!auth) {
+      resolve(null);
+
+      return;
+    }
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      unsubscribe();
+      resolve(user);
+    });
+  });
+};
+
 export const getHistory = async (): Promise<HistoryItem[]> => {
-  if (!auth || !db) return [];
+  if (!auth || !db) {
+    console.warn("getHistory: Firebase not initialized");
 
-  const user = auth.currentUser;
+    return [];
+  }
 
-  if (!user) return [];
+  // Wait for auth to initialize or use cached currentUser if ready
+  let user = auth.currentUser;
 
-  const historyRef = collection(db, "users", user.uid, "daily_menus");
-  const q = query(historyRef, orderBy("date", "desc"), limit(30)); // Last 30 days default
-  const snapshot = await getDocs(q);
+  if (!user) {
+    user = await getCurrentUser();
+  }
 
-  return snapshot.docs.map(
-    (doc) =>
-      ({
+  if (!user) {
+    console.warn("getHistory: User not authenticated even after waiting");
+
+    return [];
+  }
+
+  try {
+    const historyRef = collection(db, "users", user.uid, "daily_menus");
+    // Explicitly use date field for ordering. If this fails, it might need an index.
+    const q = query(historyRef, orderBy("date", "desc"), limit(30));
+    const snapshot = await getDocs(q);
+
+    console.log(`getHistory: Found ${snapshot.docs.length} documents for user ${user.uid}`);
+
+    return snapshot.docs.map((doc) => {
+      const data = doc.data();
+
+      return {
+        date: data.date || doc.id, // Fallback to doc ID if date field is missing
         id: doc.id,
-        ...doc.data(),
-      }) as HistoryItem,
-  );
+        ...data,
+      } as HistoryItem;
+    });
+  } catch (error) {
+    console.error("getHistory: Failed to fetch history", error);
+
+    return [];
+  }
 };
 export const getUserProfile = async (): Promise<any> => {
   if (!functions) throw new Error("Firebase not initialized");
+
+  // Ensure auth is initialized before calling
+  await getCurrentUser();
 
   const getProfileFn = httpsCallable<any, any>(functions, "get_user_profile");
   const result = await getProfileFn({});
@@ -149,6 +199,9 @@ export const getUserProfile = async (): Promise<any> => {
 
 export const updateUserProfile = async (profile: any): Promise<{ success: boolean }> => {
   if (!functions) throw new Error("Firebase not initialized");
+
+  // Ensure auth is initialized before calling
+  await getCurrentUser();
 
   const updateProfileFn = httpsCallable<{ profile: any }, { success: boolean }>(
     functions,
