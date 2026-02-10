@@ -204,6 +204,28 @@ export default function Home() {
 
           if (targetItem) {
             setSuggestion(targetItem.output);
+
+            // Restore meals from history input if available
+            if (targetItem.input?.mealPlans) {
+              setMeals(
+                targetItem.input.mealPlans.map((mp: any, index: number) => ({
+                  color: mp.type === "log" ? "bg-orange-100" : "bg-blue-100",
+                  icon:
+                    mp.label === "朝" ? (
+                      <Coffee size={16} />
+                    ) : mp.label === "昼" ? (
+                      <Sun size={16} />
+                    ) : (
+                      <Moon size={16} />
+                    ),
+                  id: `history-${index}`,
+                  label: mp.label,
+                  type: mp.type,
+                  value: mp.content || "",
+                })),
+              );
+            }
+
             setCurrentScreen("result");
             setCurrentHistoryId(historyId);
             // URLからhistoryIdを削除しない（BottomNavの判定に必要）
@@ -426,7 +448,9 @@ export default function Home() {
 
     try {
       const result = await saveHistory({
+        createdAt: new Date().toISOString(),
         date: suggestion.date,
+        id: suggestion.date, // Add id explicitly (same as date string)
         input: {
           mealPlans: meals.map((m) => ({
             content: m.value,
@@ -435,19 +459,29 @@ export default function Home() {
           })),
         },
         output: suggestion,
+        updatedAt: new Date().toISOString(),
       });
 
       if (!result.success) {
-        throw new Error("Save returned unsuccessful");
+        throw new Error("サーバー側で保存が失敗しました。");
       }
 
       alert("献立を保存しました！");
-      setCurrentScreen("input");
+
+      // Reset URL and form state for a fresh start
+      window.history.replaceState({}, "", "/");
+      setMeals((prev) => prev.map((m) => ({ ...m, value: "" })));
       setSuggestion(null);
-    } catch (error) {
+      setCurrentHistoryId(null);
+      setCurrentScreen("input");
+    } catch (error: any) {
       console.error("Failed to save history:", error);
       setCurrentScreen("result");
-      alert("保存に失敗しました。もう一度お試しください。");
+      const errorMsg = error?.message || "不明なエラー";
+
+      alert(
+        `保存に失敗しました。理由: ${errorMsg}\n\nブラウザのコンソールで詳細を確認できる場合があります。`,
+      );
     }
   };
 

@@ -121,6 +121,7 @@ export const saveHistory = async (data: any): Promise<{ success: boolean; id: st
 export interface HistoryItem {
   id: string; // YYYY-MM-DD
   date: string;
+  input?: MenuInput;
   output: MenuOutput;
   createdAt: string;
 }
