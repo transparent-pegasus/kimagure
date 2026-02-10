@@ -1,15 +1,4 @@
 {
-  "indexes": [
-    {
-      "collectionGroup": "daily_menus",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "date",
-          "order": "DESCENDING"
-        }
-      ]
-    }
-  ],
+  "indexes": [],
   "fieldOverrides": []
 }

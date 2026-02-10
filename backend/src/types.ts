@@ -23,6 +23,8 @@ export interface DailyMenuDocument {
   updatedAt: string;
 }
 
+export type HistoryItem = DailyMenuDocument;
+
 // --- Input (Request to Gemini) ---
 
 export interface MenuInput {

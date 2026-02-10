@@ -3,7 +3,7 @@ import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import { defineSecret } from "firebase-functions/params";
 import { HttpsError, onCall } from "firebase-functions/v2/https";
-import type { DailyMenuDocument, MenuInput, MenuOutput } from "./types";
+import type { DailyMenuDocument, HistoryItem, MenuInput, MenuOutput } from "./types";
 
 admin.initializeApp();
 
@@ -229,8 +229,41 @@ export const get_user_profile = onCall({ maxInstances: 10 }, async (request): Pr
 
   try {
     const doc = await admin.firestore().collection("users").doc(userId).get();
+
     return doc.data()?.profile || null;
   } catch (error: any) {
     throw new HttpsError("internal", "Failed to fetch user profile.", error);
+  }
+});
+
+// History Retrieval
+export const get_history = onCall<any, Promise<HistoryItem[]>>(async (request) => {
+  // 1. Authentication Check
+  if (!request.auth) {
+    throw new HttpsError("unauthenticated", "User must be logged in to get history.");
+  }
+
+  const userId = request.auth.uid;
+
+  try {
+    const historyRef = admin.firestore().collection("users").doc(userId).collection("daily_menus");
+    const snapshot = await historyRef.orderBy("date", "desc").limit(30).get();
+
+    const history: HistoryItem[] = snapshot.docs.map((doc) => {
+      const data = doc.data();
+
+      return {
+        id: doc.id,
+        date: data.date || doc.id,
+        input: data.input,
+        output: data.output,
+        createdAt: data.createdAt,
+      } as HistoryItem;
+    });
+
+    return history;
+  } catch (error) {
+    console.error("Error fetching history:", error);
+    throw new HttpsError("internal", "Failed to fetch history.");
   }
 });

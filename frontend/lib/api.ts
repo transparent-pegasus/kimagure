@@ -1,15 +1,6 @@
 import { getAnalytics, isSupported } from "firebase/analytics";
 import { getApp, getApps, initializeApp } from "firebase/app";
 import { connectAuthEmulator, getAuth, onAuthStateChanged } from "firebase/auth";
-import {
-  collection,
-  connectFirestoreEmulator,
-  getDocs,
-  getFirestore,
-  limit,
-  orderBy,
-  query,
-} from "firebase/firestore";
 import { connectFunctionsEmulator, getFunctions, httpsCallable } from "firebase/functions";
 
 // Firebase configuration (should be in .env or similar if not public)
@@ -42,7 +33,7 @@ const getFirebaseApp = () => {
 export const app = getFirebaseApp();
 export const functions = app ? getFunctions(app, "us-central1") : null;
 export const auth = app ? getAuth(app) : null;
-export const db = app ? getFirestore(app) : null;
+
 
 // Initialize Analytics
 export const analytics =
@@ -56,23 +47,16 @@ if (
   process.env.NEXT_PUBLIC_USE_EMULATOR === "true" &&
   !_emulatorsInitialized
 ) {
-  if (functions) {
+  if (functions && auth) {
     const emulatorUrl = new URL(
       process.env.NEXT_PUBLIC_FUNCTIONS_EMULATOR_URL || "http://127.0.0.1:5001",
     );
 
+    connectAuthEmulator(auth, "http://127.0.0.1:9099");
     connectFunctionsEmulator(functions, emulatorUrl.hostname, Number(emulatorUrl.port));
-  }
 
-  if (db) {
-    connectFirestoreEmulator(db, "127.0.0.1", 8080);
+    _emulatorsInitialized = true;
   }
-
-  if (auth) {
-    connectAuthEmulator(auth, "http://127.0.0.1:9099", { disableWarnings: true });
-  }
-
-  _emulatorsInitialized = true;
 }
 
 export interface MenuInput {
@@ -144,31 +128,16 @@ export const getCurrentUser = (): Promise<any> => {
 };
 
 export const getHistory = async (): Promise<HistoryItem[]> => {
-  if (!auth || !db) return [];
+  if (!functions) throw new Error("Firebase not initialized");
 
-  // Wait for auth to initialize or use cached currentUser if ready
-  let user = auth.currentUser;
-
-  if (!user) {
-    user = await getCurrentUser();
-  }
-
-  if (!user) return [];
+  // Ensure auth is initialized
+  await getCurrentUser();
 
   try {
-    const historyRef = collection(db, "users", user.uid, "daily_menus");
-    const q = query(historyRef, orderBy("date", "desc"), limit(30));
-    const snapshot = await getDocs(q);
+    const getHistoryFn = httpsCallable<void, HistoryItem[]>(functions, "get_history");
+    const result = await getHistoryFn();
 
-    return snapshot.docs.map((doc) => {
-      const data = doc.data();
-
-      return {
-        date: data.date || doc.id, // Fallback to doc ID if date field is missing
-        id: doc.id,
-        ...data,
-      } as HistoryItem;
-    });
+    return result.data;
   } catch (error) {
     console.error("getHistory: Failed to fetch history", error);
 
