@@ -19,6 +19,9 @@ export default function HistoryPage() {
       try {
         const data = await getHistory();
 
+        // Manually sort since we removed orderBy from query temporarily
+        data.sort((a, b) => b.date.localeCompare(a.date));
+
         setHistory(data);
       } catch (e) {
         console.error("Failed to fetch history", e);

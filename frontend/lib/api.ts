@@ -7,7 +7,6 @@ import {
   getDocs,
   getFirestore,
   limit,
-  orderBy,
   query,
 } from "firebase/firestore";
 import { connectFunctionsEmulator, getFunctions, httpsCallable } from "firebase/functions";
@@ -166,7 +165,9 @@ export const getHistory = async (): Promise<HistoryItem[]> => {
   try {
     const historyRef = collection(db, "users", user.uid, "daily_menus");
     // Explicitly use date field for ordering. If this fails, it might need an index.
-    const q = query(historyRef, orderBy("date", "desc"), limit(30));
+    // Temporarily removing orderBy to debug fetching issue
+    // const q = query(historyRef, orderBy("date", "desc"), limit(30));
+    const q = query(historyRef, limit(30));
     const snapshot = await getDocs(q);
 
     console.log(`getHistory: Found ${snapshot.docs.length} documents for user ${user.uid}`);
