@@ -7,6 +7,7 @@ import {
   getDocs,
   getFirestore,
   limit,
+  orderBy,
   query,
 } from "firebase/firestore";
 import { connectFunctionsEmulator, getFunctions, httpsCallable } from "firebase/functions";
@@ -143,11 +144,7 @@ export const getCurrentUser = (): Promise<any> => {
 };
 
 export const getHistory = async (): Promise<HistoryItem[]> => {
-  if (!auth || !db) {
-    console.warn("getHistory: Firebase not initialized");
-
-    return [];
-  }
+  if (!auth || !db) return [];
 
   // Wait for auth to initialize or use cached currentUser if ready
   let user = auth.currentUser;
@@ -156,21 +153,12 @@ export const getHistory = async (): Promise<HistoryItem[]> => {
     user = await getCurrentUser();
   }
 
-  if (!user) {
-    console.warn("getHistory: User not authenticated even after waiting");
-
-    return [];
-  }
+  if (!user) return [];
 
   try {
     const historyRef = collection(db, "users", user.uid, "daily_menus");
-    // Explicitly use date field for ordering. If this fails, it might need an index.
-    // Temporarily removing orderBy to debug fetching issue
-    // const q = query(historyRef, orderBy("date", "desc"), limit(30));
-    const q = query(historyRef, limit(30));
+    const q = query(historyRef, orderBy("date", "desc"), limit(30));
     const snapshot = await getDocs(q);
-
-    console.log(`getHistory: Found ${snapshot.docs.length} documents for user ${user.uid}`);
 
     return snapshot.docs.map((doc) => {
       const data = doc.data();
