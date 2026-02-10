@@ -34,7 +34,6 @@ export const app = getFirebaseApp();
 export const functions = app ? getFunctions(app, "us-central1") : null;
 export const auth = app ? getAuth(app) : null;
 
-
 // Initialize Analytics
 export const analytics =
   typeof window !== "undefined"
@@ -52,7 +51,7 @@ if (
       process.env.NEXT_PUBLIC_FUNCTIONS_EMULATOR_URL || "http://127.0.0.1:5001",
     );
 
-    connectAuthEmulator(auth, "http://127.0.0.1:9099");
+    connectAuthEmulator(auth, "http://127.0.0.1:9099", { disableWarnings: true });
     connectFunctionsEmulator(functions, emulatorUrl.hostname, Number(emulatorUrl.port));
 
     _emulatorsInitialized = true;

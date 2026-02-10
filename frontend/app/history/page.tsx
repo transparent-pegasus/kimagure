@@ -55,8 +55,7 @@ export default function HistoryPage() {
           {history.map((item) => (
             <Card
               key={item.id}
-              onClick={() => router.push(`/?historyId=${item.id}`)}
-              className="group overflow-hidden border-2 border-stone-200 hover:border-amber-400 hover:shadow-md transition-all cursor-pointer rounded-2xl"
+              className="group overflow-hidden border-2 border-stone-200 bg-white hover:border-amber-400 hover:shadow-md transition-all rounded-2xl"
             >
               <div className="bg-stone-50 group-hover:bg-amber-50 px-4 py-2 border-b border-stone-100 flex items-center justify-between transition-colors">
                 <span className="text-sm font-black text-stone-700 flex items-center gap-2">
@@ -80,6 +79,7 @@ export default function HistoryPage() {
                 <Button
                   variant="ghost"
                   size="icon"
+                  onClick={() => router.push(`/?historyId=${item.id}`)}
                   className="text-stone-300 group-hover:text-amber-500 group-hover:translate-x-1 transition-all"
                 >
                   <ChevronRight size={20} />
