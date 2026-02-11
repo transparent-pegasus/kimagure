@@ -46,3 +46,11 @@ verify:
 	make build-local > .tmp/build.log
 	@echo "Verification successful. Cleaning up .tmp..."
 	@powershell -Command "Remove-Item .tmp/* -Force"
+
+# Android
+android-build:
+	cd android && gradlew bundleRelease
+	copy android\app\build\outputs\bundle\release\app-release.aab android\app-release-bundle.aab
+
+android-clean:
+	cd android && gradlew clean
