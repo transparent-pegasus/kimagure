@@ -1,6 +1,13 @@
 import { getAnalytics, isSupported } from "firebase/analytics";
 import { getApp, getApps, initializeApp } from "firebase/app";
-import { connectAuthEmulator, getAuth, onAuthStateChanged } from "firebase/auth";
+import {
+  connectAuthEmulator,
+  getAuth,
+  GoogleAuthProvider,
+  onAuthStateChanged,
+  signInWithPopup,
+  signOut,
+} from "firebase/auth";
 import { connectFunctionsEmulator, getFunctions, httpsCallable } from "firebase/functions";
 
 // Firebase configuration (should be in .env or similar if not public)
@@ -168,4 +175,29 @@ export const updateUserProfile = async (profile: any): Promise<{ success: boolea
   const result = await updateProfileFn({ profile });
 
   return result.data;
+};
+export const signInWithGoogle = async () => {
+  if (!auth) throw new Error("Firebase not initialized");
+
+  const provider = new GoogleAuthProvider();
+
+  try {
+    const result = await signInWithPopup(auth, provider);
+
+    return result.user;
+  } catch (error) {
+    console.error("Google Sign-In Error:", error);
+    throw error;
+  }
+};
+
+export const logout = async () => {
+  if (!auth) throw new Error("Firebase not initialized");
+
+  try {
+    await signOut(auth);
+  } catch (error) {
+    console.error("Logout Error:", error);
+    throw error;
+  }
 };

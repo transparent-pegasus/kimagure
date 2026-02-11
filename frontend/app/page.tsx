@@ -1,6 +1,8 @@
 "use client";
 
+import { onAuthStateChanged } from "firebase/auth";
 import {
+  ArrowDown,
   ArrowLeft,
   Bird,
   Check,
@@ -17,14 +19,24 @@ import {
   Utensils,
   Youtube,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+import React, { Suspense, useEffect, useState } from "react";
 
+import { LoginPage } from "@/components/login-page";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
+  auth,
   getHistory,
   getUserProfile,
   type MenuInput,
@@ -33,7 +45,7 @@ import {
   suggestMenu,
   updateUserProfile,
 } from "@/lib/api";
-import { cn } from "@/lib/utils";
+import { cn, formatStoreName } from "@/lib/utils";
 
 // Types
 type MealType = "log" | "target";
@@ -105,12 +117,41 @@ const getPlaceholder = (label: string) => {
   }
 };
 
-export default function Home() {
+function HomeContent() {
   const router = useRouter();
   const [currentScreen, setCurrentScreen] = useState<"input" | "result" | "loading">("loading");
   const [suggestion, setSuggestion] = useState<MenuOutput | null>(null);
   const [currentHistoryId, setCurrentHistoryId] = useState<string | null>(null);
   const [loadingMessage, setLoadingMessage] = useState("献立を読み込んでいます...");
+  const [saveDialogOpen, setSaveDialogOpen] = useState(false);
+  const [isSuggesting, setIsSuggesting] = useState(false);
+
+  // Auth State
+  const [user, setUser] = useState<any>(null);
+  const [authLoading, setAuthLoading] = useState(true);
+
+  const searchParams = useSearchParams();
+
+  // Monitor Authentication
+  useEffect(() => {
+    if (!auth) {
+      setAuthLoading(false);
+
+      return;
+    }
+    const unsubscribe = onAuthStateChanged(auth, (u) => {
+      setUser(u);
+      setAuthLoading(false);
+
+      // If user logs out, reset screen
+      if (!u) {
+        setCurrentScreen("loading");
+        setAuthLoading(false);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   // Initial Data
   const [meals, setMeals] = useState<Meal[]>([
@@ -181,12 +222,10 @@ export default function Home() {
   }, []);
 
   // Check for historyId in URL
-  // Check for URL params
   useEffect(() => {
     const initialize = async () => {
-      const params = new URLSearchParams(window.location.search);
-      const historyId = params.get("historyId");
-      const reset = params.get("reset");
+      const historyId = searchParams.get("historyId");
+      const reset = searchParams.get("reset");
 
       if (reset) {
         setCurrentScreen("input");
@@ -237,12 +276,22 @@ export default function Home() {
           setCurrentScreen("input");
         }
       } else {
-        setCurrentScreen("input");
+        // URL is / (no historyId and no reset)
+        // If we are currently showing a fresh suggestion result (not saved yet), don't reset to input.
+        if (currentScreen === "result" && suggestion && !currentHistoryId) {
+          return;
+        }
+
+        if (currentScreen !== "result" || !currentHistoryId) {
+          setCurrentScreen("input");
+        }
       }
     };
 
-    initialize();
-  }, []);
+    if (!authLoading && user) {
+      initialize();
+    }
+  }, [searchParams, authLoading, user, currentScreen, currentHistoryId, suggestion]);
 
   // Derived state
   const calorieGuideline = getCalorieGuideline(birthYear, gender);
@@ -323,11 +372,12 @@ export default function Home() {
 
     (newMeals[index] as any)[key] = value;
 
-    if (key === "type" && value === "target") {
-      newMeals.forEach((m, i) => {
-        if (i !== index) m.type = "log";
-      });
-    }
+    // Previously cleared other targets, now allow multiple selection
+    // if (key === "type" && value === "target") {
+    //   newMeals.forEach((m, i) => {
+    //     if (i !== index) m.type = "log";
+    //   });
+    // }
     setMeals(newMeals);
   };
 
@@ -344,7 +394,7 @@ export default function Home() {
 
       if (!mainElement) return;
 
-      const targetScroll = 60;
+      const targetScroll = 120;
       const duration = 400;
       const startTime = performance.now();
       const startScroll = mainElement.scrollTop;
@@ -384,7 +434,7 @@ export default function Home() {
   // Logic: Suggest Menu
   const handleSuggest = async () => {
     setLoadingMessage("献立を考えています...");
-    setCurrentScreen("loading");
+    setIsSuggesting(true);
 
     try {
       // Build API input
@@ -436,6 +486,8 @@ export default function Home() {
       console.error("Failed to suggest menu:", error);
       setCurrentScreen("input");
       alert("献立の作成に失敗しました。もう一度お試しください。");
+    } finally {
+      setIsSuggesting(false);
     }
   };
 
@@ -466,14 +518,8 @@ export default function Home() {
         throw new Error("サーバー側で保存が失敗しました。");
       }
 
-      alert("献立を保存しました！");
-
-      // Reset URL and form state for a fresh start
-      window.history.replaceState({}, "", "/");
-      setMeals((prev) => prev.map((m) => ({ ...m, value: "" })));
-      setSuggestion(null);
-      setCurrentHistoryId(null);
-      setCurrentScreen("input");
+      // Show Dialog instead of alert
+      setSaveDialogOpen(true);
     } catch (error: any) {
       console.error("Failed to save history:", error);
       setCurrentScreen("result");
@@ -484,6 +530,18 @@ export default function Home() {
       );
     }
   };
+
+  if (authLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[60vh] space-y-4">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <LoginPage />;
+  }
 
   if (currentScreen === "loading") {
     return (
@@ -670,7 +728,7 @@ export default function Home() {
             <Label>使いたい材料</Label>
             <Input
               type="text"
-              placeholder="例: 玉ねぎ。豚肉。豆腐"
+              placeholder="例: 玉ねぎ、豚肉、豆腐"
               className="font-bold placeholder:text-muted-foreground/50"
             />
           </div>
@@ -678,7 +736,7 @@ export default function Home() {
             <Label>食べたいメニュー・ジャンル</Label>
             <Input
               type="text"
-              placeholder="例: 和定食。ハンバーグセット"
+              placeholder="例: 和定食、ハンバーグセット"
               className="font-bold placeholder:text-muted-foreground/50"
             />
           </div>
@@ -747,7 +805,7 @@ export default function Home() {
                 onClick={() => setEffort("ready_made_only")}
               >
                 スーパー・
-                <wbr />
+                <br className="block sm:hidden" />
                 コンビニ
               </TabButton>
               <TabButton active={effort === "eating_out"} onClick={() => setEffort("eating_out")}>
@@ -769,7 +827,10 @@ export default function Home() {
               </TabButton>
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+        </div>
+        <hr className="my-6 border-stone-200" />
+        <div className="flex flex-col gap-4 relative">
+          <div className="grid grid-cols-2 gap-4 bg-background/50 backdrop-blur-sm rounded-xl">
             <div>
               <Label className="mb-2 block">生年 (西暦)</Label>
               <Input
@@ -800,13 +861,18 @@ export default function Home() {
                   onClick={() => handleProfileChange(birthYear, "none", calorieLimit)}
                 >
                   指定
-                  <wbr />
+                  <br className="block sm:hidden" />
                   なし
                 </TabButton>
               </div>
             </div>
           </div>
-          <div>
+
+          <div className="flex justify-center -my-3 opacity-30 text-stone-400 z-0">
+            <ArrowDown size={24} strokeWidth={3} />
+          </div>
+
+          <div className="bg-background/50 backdrop-blur-sm rounded-xl">
             <Label className="mb-2 block">
               1日の最大カロリー (kcal)
               {calorieGuideline && (
@@ -833,13 +899,13 @@ export default function Home() {
             <div
               key={item.id}
               className={cn(
-                "flex flex-wrap items-center justify-between p-3 rounded-xl border-2 transition-all gap-2 relative group",
+                "flex flex-col md:flex-row md:items-center justify-between p-3 rounded-xl border-2 transition-all gap-3 relative group",
                 item.hasLimit
                   ? "bg-card border-primary"
                   : "bg-muted/30 border-transparent hover:bg-muted/50",
               )}
             >
-              <div className="flex items-center gap-3 flex-1">
+              <div className="flex items-center gap-3 w-full md:w-auto md:flex-1">
                 <button
                   onClick={() => updateNgIngredient(index, "hasLimit", !item.hasLimit)}
                   className={cn(
@@ -863,7 +929,7 @@ export default function Home() {
                 />
               </div>
 
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 w-full md:w-auto justify-end">
                 {/* NG Button */}
                 <button
                   onClick={() => {
@@ -938,15 +1004,15 @@ export default function Home() {
               )}
             </div>
           ))}
-          <Button
-            variant="ghost"
-            className="w-full border-2 border-dashed border-muted-foreground/30 text-muted-foreground hover:bg-muted/30 hover:text-stone-600 hover:border-stone-400 h-12 rounded-xl text-base font-bold transition-all"
-            onClick={addNgIngredient}
-          >
-            <Plus size={18} className="mr-2" /> 制限項目を追加
-          </Button>
-          <div className="h-8" /> {/* Spacer for scrolling */}
         </div>
+        <Button
+          variant="ghost"
+          className="w-full border-2 border-dashed border-muted-foreground/30 text-muted-foreground hover:bg-muted/30 hover:text-stone-600 hover:border-stone-400 h-12 rounded-xl text-base font-bold transition-all mt-6"
+          onClick={addNgIngredient}
+        >
+          <Plus size={18} className="mr-2" /> 制限項目を追加
+        </Button>
+        <div className="h-8" /> {/* Spacer for scrolling */}
       </Section>
 
       {/* FAB */}
@@ -958,6 +1024,36 @@ export default function Home() {
           献立を決める！
         </Button>
       </div>
+
+      <Dialog open={saveDialogOpen} onOpenChange={setSaveDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold flex items-center gap-2">
+              <Check className="text-green-500" size={24} strokeWidth={3} />
+              保存完了
+            </DialogTitle>
+            <DialogDescription className="font-bold text-stone-600">
+              献立を履歴に保存しました！
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-center p-4">
+            <Bird size={64} className="text-primary animate-bounce-slow" />
+          </div>
+          <DialogFooter>
+            <Button className="w-full font-bold" onClick={() => setSaveDialogOpen(false)}>
+              閉じる
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal */}
+      {isSuggesting && (
+        <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex flex-col items-center justify-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          <p className="font-bold text-lg text-primary">{loadingMessage}</p>
+        </div>
+      )}
     </div>
   );
 }
@@ -1013,7 +1109,7 @@ const MealInputRow = ({
         >
           {meal.icon}
         </div>
-        <div className="font-bold text-muted-foreground min-w-[3rem] text-sm shrink-0">
+        <div className="font-bold text-muted-foreground min-w-[1.5rem] md:min-w-[3rem] text-sm shrink-0 text-center md:text-left">
           {meal.label}
         </div>
 
@@ -1024,10 +1120,10 @@ const MealInputRow = ({
             onChange={(e) => onUpdate(index, "value", e.target.value)}
             placeholder={isTarget ? "決まっているメニュー (例: 白米)" : getPlaceholder(meal.label)}
             className={cn(
-              "h-auto py-1 px-2 border-transparent bg-transparent focus-visible:ring-0 focus-visible:bg-muted/50 font-bold text-lg",
+              "h-auto py-1 px-2 border-transparent bg-transparent focus-visible:ring-0 focus-visible:bg-muted/50 font-bold text-base md:text-lg",
               isTarget
                 ? "placeholder:text-primary/70 text-primary"
-                : "placeholder:text-muted-foreground/30",
+                : "placeholder:text-muted-foreground/30 placeholder:text-[10px] md:placeholder:text-sm",
             )}
           />
         </div>
@@ -1073,7 +1169,7 @@ const LoggedMealCard = ({ cal, icon, label, menu }: any) => (
     <div className="flex-1 bg-card rounded-xl p-3 border flex justify-between items-center">
       <div>
         <span className="text-xs font-bold text-muted-foreground block">{label}</span>
-        <span className="font-bold">{menu}</span>
+        <span className="font-bold">{formatStoreName(menu)}</span>
       </div>
       <span className="font-bold text-muted-foreground text-sm">{cal} kcal</span>
     </div>
@@ -1101,7 +1197,7 @@ const SelectButton = ({ active, children, icon, onClick }: any) => (
       active ? "shadow-md transform scale-[1.02]" : "text-muted-foreground hover:text-foreground",
     )}
   >
-    <div className="flex items-center justify-center gap-2 relative z-10 w-full">
+    <div className="flex items-center justify-center gap-2 relative w-full">
       {icon && <div className="text-current opacity-80">{icon}</div>}
       <div className="text-center leading-tight">{children}</div>
     </div>
@@ -1126,7 +1222,7 @@ const DishItem = ({ cal, name, showLink, tags }: any) => (
   <div className="flex flex-col gap-2 border-b last:border-0 last:pb-0 pb-3">
     <div className="flex items-start justify-between">
       <div>
-        <h4 className="font-bold mb-1">{name}</h4>
+        <h4 className="font-bold mb-1">{formatStoreName(name)}</h4>
         <div className="flex gap-1">
           {tags.map((tag: string) => (
             <span
@@ -1177,3 +1273,17 @@ const NutrientBar = ({ color, dark, label, value }: any) => (
     </div>
   </div>
 );
+
+export default function Home() {
+  return (
+    <Suspense
+      fallback={
+        <div className="h-screen w-screen flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        </div>
+      }
+    >
+      <HomeContent />
+    </Suspense>
+  );
+}

@@ -1,6 +1,5 @@
 "use client";
 
-import { onAuthStateChanged, signInAnonymously } from "firebase/auth";
 import * as React from "react";
 
 import { auth } from "@/lib/api";
@@ -11,15 +10,16 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
     if (!currentAuth) return;
 
-    const unsubscribe = onAuthStateChanged(currentAuth, (u) => {
-      if (!u) {
-        signInAnonymously(currentAuth).catch((error) => {
-          console.error("Anonymous auth failed", error);
-        });
-      }
-    });
+    // Auto-login removed to support explicit login screen
+    // const unsubscribe = onAuthStateChanged(currentAuth, (u) => {
+    //   if (!u) {
+    //     signInAnonymously(currentAuth).catch((error) => {
+    //       console.error("Anonymous auth failed", error);
+    //     });
+    //   }
+    // });
 
-    return () => unsubscribe();
+    // return () => unsubscribe();
   }, []);
 
   return <>{children}</>;

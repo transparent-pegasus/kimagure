@@ -1,12 +1,35 @@
 "use client";
 
+import { onAuthStateChanged } from "firebase/auth";
 import { Menu, Rabbit } from "lucide-react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { auth, logout } from "@/lib/api";
 
 export function Header() {
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!auth) {
+      setLoading(false);
+
+      return;
+    }
+    const unsubscribe = onAuthStateChanged(auth, (u) => {
+      setUser(u);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  if (loading) return null;
+  if (!user) return null;
+
   return (
     <header className="sticky top-0 z-40 bg-amber-400 border-b border-amber-500/20 h-14 flex items-center justify-between px-4 shrink-0 shadow-sm">
       <div className="flex items-center gap-2">
@@ -42,9 +65,9 @@ export function Header() {
             <Button
               variant="ghost"
               className="w-full justify-start px-4 text-destructive hover:text-destructive hover:bg-destructive/10"
-              onClick={() => {
-                // Logout logic here
-                console.log("Logout clicked");
+              onClick={async () => {
+                await logout();
+                window.location.reload();
               }}
             >
               ログアウト

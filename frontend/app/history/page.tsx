@@ -1,5 +1,6 @@
 "use client";
 
+import { onAuthStateChanged } from "firebase/auth";
 import { Calendar, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -7,12 +8,24 @@ import { useEffect, useState } from "react";
 // Components
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { getHistory, type HistoryItem } from "@/lib/api";
+import { auth, getHistory, type HistoryItem } from "@/lib/api";
 
 export default function HistoryPage() {
   const router = useRouter();
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Auth Guard
+  useEffect(() => {
+    if (!auth) return;
+    const unsubscribe = onAuthStateChanged(auth, (u) => {
+      if (!u) {
+        router.push("/");
+      }
+    });
+
+    return () => unsubscribe();
+  }, [router]);
 
   useEffect(() => {
     const fetchHistory = async () => {
@@ -47,7 +60,7 @@ export default function HistoryPage() {
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500" />
         </div>
       ) : history.length === 0 ? (
-        <Card className="p-8 text-center text-stone-500 font-bold border-2 border-dashed border-stone-200 bg-stone-50/50">
+        <Card className="p-8 text-center md:text-left text-stone-500 font-bold border-2 border-dashed border-stone-200 bg-stone-50/50">
           <p>履歴はまだありません</p>
         </Card>
       ) : (
@@ -55,7 +68,8 @@ export default function HistoryPage() {
           {history.map((item) => (
             <Card
               key={item.id}
-              className="group overflow-hidden border-2 border-stone-200 bg-white hover:border-amber-400 hover:shadow-md transition-all rounded-2xl"
+              onClick={() => router.push(`/?historyId=${item.id}`)}
+              className="group overflow-hidden border-2 border-stone-200 bg-white hover:border-amber-400 hover:shadow-md transition-all rounded-2xl cursor-pointer"
             >
               <div className="bg-stone-50 group-hover:bg-amber-50 px-4 py-2 border-b border-stone-100 flex items-center justify-between transition-colors">
                 <span className="text-sm font-black text-stone-700 flex items-center gap-2">
@@ -67,7 +81,7 @@ export default function HistoryPage() {
               </div>
               <div className="p-4 flex items-center justify-between">
                 <div className="flex-1">
-                  <div className="font-bold text-stone-600 line-clamp-2 text-sm leading-relaxed">
+                  <div className="font-bold text-stone-600 line-clamp-3 text-xs leading-normal">
                     {item.output?.meals
                       ?.map(
                         (m: any) =>
@@ -79,7 +93,6 @@ export default function HistoryPage() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => router.push(`/?historyId=${item.id}`)}
                   className="text-stone-300 group-hover:text-amber-500 group-hover:translate-x-1 transition-all"
                 >
                   <ChevronRight size={20} />

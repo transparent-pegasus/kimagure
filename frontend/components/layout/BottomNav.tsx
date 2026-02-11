@@ -1,15 +1,38 @@
 "use client";
 
+import { onAuthStateChanged } from "firebase/auth";
 import { History, Utensils } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
+import { auth } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
 export function BottomNav() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const hasHistoryId = searchParams.has("historyId");
+
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!auth) {
+      setLoading(false);
+
+      return;
+    }
+    const unsubscribe = onAuthStateChanged(auth, (u) => {
+      setUser(u);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  if (loading) return null;
+  if (!user) return null;
 
   const items = [
     {
