@@ -21,7 +21,7 @@
     "alias": "android"
   },
   "appVersionName": "1.2",
-  "appVersionCode": 7,
+  "appVersionCode": 6,
   "shortcuts": [],
   "generatorApp": "bubblewrap-cli",
   "webManifestUrl": "https://kimagure-1330c.web.app/manifest.json",

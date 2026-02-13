@@ -7,6 +7,7 @@ build:
 	pnpm run build
 
 build-local:
+	node scripts/generate-releases.js
 	pnpm --filter @kimagure/backend build && pnpm --filter @kimagure/frontend build
 
 # Development
@@ -49,8 +50,20 @@ verify:
 
 # Android
 android-build:
+	@echo "Syncing Android project with bubblewrap (preserving version)..."
+	@pwsh -ExecutionPolicy Bypass -File scripts/update_android_project.ps1
 	cd android && gradlew bundleRelease
-	copy android\app\build\outputs\bundle\release\app-release.aab android\app-release-bundle.aab
+	@pwsh -ExecutionPolicy Bypass -Command "Copy-Item android/app/build/outputs/bundle/release/app-release.aab android/app-release.aab -Force"
+	@echo "Build complete. AAB is located at: android/app-release.aab"
+
+android-release:
+	@echo "Updating Android project with bubblewrap (incrementing version)..."
+	@powershell -ExecutionPolicy Bypass -Command "Copy-Item twa-manifest.json android/twa-manifest.json -Force"
+	cd android && bubblewrap update --yes
+	@powershell -ExecutionPolicy Bypass -Command "Copy-Item android/twa-manifest.json twa-manifest.json -Force"
+	cd android && gradlew bundleRelease
+	@powershell -ExecutionPolicy Bypass -Command "Copy-Item android/app/build/outputs/bundle/release/app-release.aab android/app-release.aab -Force"
+	@echo "Release build complete. AAB is located at: android/app-release.aab"
 
 android-clean:
 	cd android && gradlew clean

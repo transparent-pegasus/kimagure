@@ -1,0 +1,79 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>20260211_1.1</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 2rem;
+      background-color: #fef7ed;
+    }
+    .container {
+      background-color: white;
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      border: 2px solid #fed7aa;
+    }
+    h1, h2, h3 { color: #78350f; }
+    h1 { border-bottom: 3px solid #f59e0b; padding-bottom: 0.5rem; }
+    h2 { margin-top: 2rem; border-bottom: 2px solid #fed7aa; padding-bottom: 0.3rem; }
+    h3 { color: #b45309; }
+    ul { padding-left: 1.5rem; }
+    li { margin-bottom: 0.5rem; }
+    code { background-color: #fef3c7; padding: 0.2rem 0.4rem; border-radius: 4px; font-size: 0.9em; }
+    a { color: #d97706; text-decoration: none; font-weight: 500; }
+    a:hover { text-decoration: underline; }
+    hr { border: none; border-top: 2px dashed #fed7aa; margin: 2rem 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>きまぐれごはん v1.1 リリースノート</h1>
+<h2>概要</h2>
+<p>本バージョンでは、Googleアカウントによるログイン機能の実装と、モバイルでの使い勝手を向上させるためのUI改善を行いました。また、献立提案時の画面遷移の挙動を見直し、よりスムーズな操作体験を実現しました。</p>
+<hr>
+<h2>主な変更点</h2>
+<h3>1. 認証機能の強化</h3>
+<ul>
+<li><strong>Googleログイン</strong>: Googleアカウントを使用してサインインできるようになりました。</li>
+<li><strong>匿名ログイン</strong>: 従来通りの「すぐに始める」機能も維持しつつ、後からGoogleアカウントにデータを紐付けることが可能になります（※データ連携機能はバックエンド側で随時対応中）。</li>
+<li><strong>ログアウト機能</strong>: メニューから明示的にログアウトできるようになりました。</li>
+</ul>
+<h3>2. UI/UXの改善</h3>
+<ul>
+<li><strong>モバイル入力の最適化</strong>: スマートフォンでの利用時に、食事プラン入力欄やプレースホルダのサイズを調整し、画面の有効活用と入力しやすさを向上させました。</li>
+<li><strong>履歴リストの改善</strong>: 履歴カード全体をクリック可能にし、詳細へのアクセスを容易にしました。また、文字サイズを調整し一覧性を高めました。</li>
+<li><strong>提案フローのブラッシュアップ</strong>:<ul>
+<li>「献立を決める」ボタンを押した際、画面全体が切り替わるのではなく、現在の画面の上にローディングを表示（オーバーレイ）するように変更しました。これにより、スクロール位置が飛ばされる問題を解消しました。</li>
+<li>提案完了時の保存メッセージを、ブラウザ標準のアラートから専用のモーダルダイアログに変更しました。</li>
+</ul>
+</li>
+</ul>
+<h3>3. その他・不具合修正</h3>
+<ul>
+<li><strong>表記の簡略化</strong>: AIが提案するコンビニ名を、より親しみやすい短縮形（例:「セブン-イレブン」→「セブン」）に自動置換するようにしました。</li>
+<li><strong>レイアウト調整</strong>:<ul>
+<li>ヘッダー周りの重複を整理し、画面を広く使えるようにしました。</li>
+<li>プロフィール入力欄やNG食材リストのレイアウトを見直し、直感的に操作できるようにしました。</li>
+<li>履歴がない場合のメッセージ表示位置を調整しました。</li>
+</ul>
+</li>
+<li><strong>不具合修正</strong>:<ul>
+<li>提案完了後に結果画面へ正しく遷移しない場合がある問題を修正しました。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<p>2026年2月11日 リリース</p>
+
+  </div>
+</body>
+</html>

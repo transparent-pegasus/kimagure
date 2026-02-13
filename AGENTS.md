@@ -210,8 +210,8 @@ interface Nutrient {
 
 ## 3. Android App (BubbleWrap)
 
-- 構成ファイル: `twa-manifest.json`
-- ビルド: `bubblewrap build`
+- 構成ファイル: `twa-manifest.json` (プロジェクトルート)
+- ビルド: `bubblewrap build` または `make android-build`
 
 # [8] ディレクトリ構造
 
@@ -224,3 +224,6 @@ interface Nutrient {
 - backend: Firebase Functions
   - src: Backend logic (API endpoints, Gemini integration)
 - docs: Documentation & Plans
+- twa-manifest.json: Android TWA configuration
+- android-keystore.jks: Android signing key
+- store_icon.png: Play Store icon asset

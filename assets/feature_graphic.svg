@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="1024"
+   height="500"
+   viewBox="0 0 1024 500"
+   version="1.1"
+   id="svg75"
+   sodipodi:docname="feature_graphic.svg"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)"
+   inkscape:export-filename="C:\Users\kunim\Documents\repos\kimagure\assets\feature_graphic.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96">
+  <metadata
+     id="metadata79">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1057"
+     id="namedview77"
+     showgrid="false"
+     inkscape:zoom="0.77892231"
+     inkscape:cx="-55.552203"
+     inkscape:cy="198.50034"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg75" />
+  <defs
+     id="defs27">
+    <!-- Background Gradient: Warm, Morning Sun feel -->
+    <linearGradient
+       id="bgGrad"
+       x1="0%"
+       y1="0%"
+       x2="100%"
+       y2="100%">
+      <stop
+         offset="0%"
+         style="stop-color:#FFF8E1;stop-opacity:1"
+         id="stop2" />
+      <!-- Orange-50 -->
+      <stop
+         offset="100%"
+         style="stop-color:#FFE0B2;stop-opacity:1"
+         id="stop4" />
+      <!-- Orange-300 -->
+    </linearGradient>
+    <!-- Accent Gradient for Circles -->
+    <linearGradient
+       id="bubbleGrad"
+       x1="0%"
+       y1="0%"
+       x2="0%"
+       y2="100%">
+      <stop
+         offset="0%"
+         style="stop-color:#FFFFFF;stop-opacity:0.4"
+         id="stop7" />
+      <stop
+         offset="100%"
+         style="stop-color:#FFFFFF;stop-opacity:0.1"
+         id="stop9" />
+    </linearGradient>
+    <!-- Drop Shadow for Logo/Icons -->
+    <filter
+       id="softShadow"
+       x="-20%"
+       y="-20%"
+       width="140%"
+       height="140%">
+      <feGaussianBlur
+         in="SourceAlpha"
+         stdDeviation="3"
+         id="feGaussianBlur12" />
+      <feOffset
+         dx="2"
+         dy="3"
+         result="offsetblur"
+         id="feOffset14" />
+      <feComponentTransfer
+         id="feComponentTransfer18">
+        <feFuncA
+           type="linear"
+           slope="0.2"
+           id="feFuncA16" />
+      </feComponentTransfer>
+      <feMerge
+         id="feMerge24">
+        <feMergeNode
+           id="feMergeNode20" />
+        <feMergeNode
+           in="SourceGraphic"
+           id="feMergeNode22" />
+      </feMerge>
+    </filter>
+  </defs>
+  <!-- Background Layer -->
+  <rect
+     width="1024"
+     height="500"
+     fill="url(#bgGrad)"
+     id="rect29" />
+  <!-- Content Group -->
+  <!-- Layout: Rabbit Icon on Left, Text Block on Right -->
+  <!-- Rabbit Icon Group -->
+  <!-- Center of Rabbit roughly at (250, 250) -->
+  <!-- Text Group -->
+  <!-- Aligned to start from x=380 to prevent clipping on the right -->
+  <g
+     transform="translate(380, 180)"
+     id="g65">
+    <!-- Main Title -->
+    <text
+       x="0"
+       y="60"
+       font-family="'Rounded Mplus 1c', 'M PLUS Rounded 1c', 'Hiragino Maru Gothic Pro', 'Yu Gothic', sans-serif"
+       font-size="76"
+       font-weight="800"
+       fill="#4E342E"
+       letter-spacing="2"
+       filter="url(#softShadow)"
+       id="text59">
+      きまぐれごはん
+    </text>
+    <!-- Catch Copy -->
+    <text
+       x="5"
+       y="130"
+       font-family="'Rounded Mplus 1c', 'M PLUS Rounded 1c', 'Hiragino Maru Gothic Pro', 'Yu Gothic', sans-serif"
+       font-size="32"
+       font-weight="600"
+       fill="#BF360C"
+       letter-spacing="1"
+       id="text61">
+      「計画しない」が、いちばん続く。
+    </text>
+    <!-- Sub Copy -->
+    <text
+       x="5"
+       y="180"
+       font-family="'Rounded Mplus 1c', 'M PLUS Rounded 1c', 'Hiragino Maru Gothic Pro', 'Yu Gothic', sans-serif"
+       font-size="20"
+       font-weight="500"
+       fill="#5D4037"
+       opacity="0.9"
+       id="text63">
+      食べたものと気分を入力するだけで、今日の献立をAIが提案
+    </text>
+  </g>
+  <!-- Interactive/Accent Elements -->
+  <!-- Sparkles -->
+  <g
+     transform="matrix(2.3488355,0,0,2.3488355,46.409366,-288.50962)"
+     id="layer1"
+     inkscape:label="Layer 1">
+    <g
+       id="g931">
+      <rect
+         style="opacity:1;vector-effect:none;fill:#fbbf24;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:3.89258838;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers"
+         id="rect10"
+         width="52.613106"
+         height="27.75704"
+         x="51.773758"
+         y="225.73166" />
+      <rect
+         style="opacity:1;vector-effect:none;fill:#fbbf24;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:3.8453958;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers"
+         id="rect10-1"
+         width="73.192863"
+         height="19.471685"
+         x="42.609985"
+         y="230.06845" />
+      <rect
+         style="opacity:1;vector-effect:none;fill:#fbbf24;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2.4362402;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers"
+         id="rect10-10"
+         width="15.195374"
+         height="37.646015"
+         x="90.7575"
+         y="185.96898" />
+      <rect
+         style="opacity:1;vector-effect:none;fill:#fbbf24;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2.18719149;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers"
+         id="rect10-1-2"
+         width="21.075302"
+         height="21.877111"
+         x="21.534685"
+         y="230.06845" />
+      <rect
+         style="opacity:1;vector-effect:none;fill:#fbbf24;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:3.51815629;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers"
+         id="rect10-0"
+         width="48.069527"
+         height="24.817076"
+         x="64.565086"
+         y="216.70497" />
+      <rect
+         style="opacity:1;vector-effect:none;fill:#fbbf24;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:3.57109785;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers"
+         id="rect10-4"
+         width="52.345837"
+         height="23.48073"
+         x="186.79454"
+         y="64.972733"
+         transform="rotate(50.431164)" />
+      <rect
+         style="opacity:1;vector-effect:none;fill:#fbbf24;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:3.65044928;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:stroke fill markers"
+         id="rect10-3"
+         width="45.396832"
+         height="28.29158"
+         x="41.397354"
+         y="243.33479" />
+    </g>
+    <g
+       transform="matrix(4.894909,0,0,4.894909,8.9911541,172.94914)"
+       id="g840"
+       style="fill:none;stroke:#4E342E;stroke-width:2;stroke-linecap:round;stroke-linejoin:round">
+      <path
+         inkscape:connector-curvature="0"
+         d="m 13,16 a 3,3 0 0 1 2.24,5"
+         id="path817" />
+      <path
+         inkscape:connector-curvature="0"
+         d="m 18,12 h 0.01"
+         id="path819" />
+      <path
+         inkscape:connector-curvature="0"
+         d="m 18,21 h -8 a 4,4 0 0 1 -4,-4 7,7 0 0 1 7,-7 h 0.2 L 9.6,6.4 A 1.979899,1.979899 0 1 1 12.4,3.6 L 15.8,7 H 16 c 3.3,0 6,2.7 6,6 v 1 a 2,2 0 0 1 -2,2 h -1 a 3,3 0 0 0 -3,3"
+         id="path821" />
+      <path
+         inkscape:connector-curvature="0"
+         d="M 20,8.54 V 4 a 2,2 0 1 0 -4,0 v 3"
+         id="path823" />
+      <path
+         inkscape:connector-curvature="0"
+         d="m 7.61,12.53 a 3,3 0 1 0 -1.6,4.3"
+         id="path825" />
+    </g>
+  </g>
+</svg>

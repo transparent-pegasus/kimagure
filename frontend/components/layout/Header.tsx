@@ -27,6 +27,8 @@ export function Header() {
     return () => unsubscribe();
   }, []);
 
+  const [open, setOpen] = useState(false);
+
   if (loading) return null;
   if (!user) return null;
 
@@ -44,7 +46,7 @@ export function Header() {
         </div>
       </div>
 
-      <Sheet>
+      <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger asChild>
           <Button variant="ghost" size="icon" className="-mr-2 text-stone-800 hover:bg-black/5">
             <Menu className="h-5 w-5" />
@@ -59,6 +61,7 @@ export function Header() {
             <Link
               href="/privacy-policy"
               className="flex items-center h-10 px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground rounded-md"
+              onClick={() => setOpen(false)}
             >
               プライバシーポリシー
             </Link>

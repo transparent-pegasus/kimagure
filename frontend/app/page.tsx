@@ -819,8 +819,15 @@ function HomeContent() {
               <TabButton active={balance === "daily"} onClick={() => setBalance("daily")}>
                 日単位
               </TabButton>
-              <TabButton active={balance === "weekly"} onClick={() => setBalance("weekly")}>
+              <TabButton
+                active={balance === "weekly"}
+                onClick={() => {}} // Disabled temporarily
+                disabled={true}
+              >
                 週単位
+                <span className="block text-[9px] font-normal leading-tight opacity-70 scale-90">
+                  (準備中)
+                </span>
               </TabButton>
               <TabButton active={balance === "none"} onClick={() => setBalance("none")}>
                 無視
@@ -1204,14 +1211,16 @@ const SelectButton = ({ active, children, icon, onClick }: any) => (
   </Button>
 );
 
-const TabButton = ({ active, children, onClick }: any) => (
+const TabButton = ({ active, children, disabled, onClick }: any) => (
   <button
-    onClick={onClick}
+    onClick={disabled ? undefined : onClick}
+    disabled={disabled}
     className={cn(
       "flex-1 py-1.5 rounded-lg font-bold text-sm transition-all",
       active
         ? "bg-[#414141] text-white shadow-sm" // Darkened active state
         : "text-muted-foreground hover:bg-background/50",
+      disabled && "opacity-40 cursor-not-allowed hover:bg-transparent",
     )}
   >
     {children}
